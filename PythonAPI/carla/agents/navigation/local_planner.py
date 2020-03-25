@@ -1,7 +1,4 @@
-#!/usr/bin/env python
-
-# Copyright (c) 2018 Intel Labs.
-# authors: German Ros (german.ros@intel.com)
+# Copyright (c) # Copyright (c) 2018-2020 CVC.
 #
 # This work is licensed under the terms of the MIT license.
 # For a copy, see <https://opensource.org/licenses/MIT>.
@@ -14,7 +11,7 @@ import random
 
 import carla
 from agents.navigation.controller import VehiclePIDController
-from agents.tools.misc import distance_vehicle, draw_waypoints
+from agents.tools.misc import draw_waypoints
 
 
 class RoadOption(Enum):
@@ -104,13 +101,13 @@ class LocalPlanner(object):
         self._min_distance = self._sampling_radius * self.MIN_DISTANCE_PERCENTAGE
         args_lateral_dict = {
             'K_P': 1.95,
-            'K_D': 0.01,
-            'K_I': 1.4,
+            'K_D': 0.2,
+            'K_I': 0.07,
             'dt': self._dt}
         args_longitudinal_dict = {
             'K_P': 1.0,
             'K_D': 0,
-            'K_I': 1,
+            'K_I': 0.05,
             'dt': self._dt}
 
         # parameters overload
@@ -186,7 +183,7 @@ class LocalPlanner(object):
         self._target_road_option = RoadOption.LANEFOLLOW
         self._global_plan = True
 
-    def run_step(self, debug=True):
+    def run_step(self, debug=False):
         """
         Execute one step of local planning which involves running the longitudinal and lateral PID controllers to
         follow the waypoints trajectory.
@@ -199,7 +196,7 @@ class LocalPlanner(object):
         if not self._global_plan and len(self._waypoints_queue) < int(self._waypoints_queue.maxlen * 0.5):
             self._compute_next_waypoints(k=100)
 
-        if len(self._waypoints_queue) == 0:
+        if len(self._waypoints_queue) == 0 and len(self._waypoint_buffer) == 0:
             control = carla.VehicleControl()
             control.steer = 0.0
             control.throttle = 0.0
@@ -242,8 +239,7 @@ class LocalPlanner(object):
         return control
 
     def done(self):
-        vehicle_transform = self._vehicle.get_transform()
-        return len(self._waypoints_queue) == 0 and all([distance_vehicle(wp, vehicle_transform) < self._min_distance for wp in self._waypoints_queue])
+        return len(self._waypoints_queue) == 0 and len(self._waypoint_buffer) == 0
 
 def _retrieve_options(list_waypoints, current_waypoint):
     """
@@ -267,7 +263,7 @@ def _retrieve_options(list_waypoints, current_waypoint):
     return options
 
 
-def _compute_connection(current_waypoint, next_waypoint):
+def _compute_connection(current_waypoint, next_waypoint, threshold=35):
     """
     Compute the type of topological connection between an active waypoint (current_waypoint) and a target waypoint
     (next_waypoint).
@@ -286,7 +282,7 @@ def _compute_connection(current_waypoint, next_waypoint):
     c = c % 360.0
 
     diff_angle = (n - c) % 180.0
-    if diff_angle < 1.0:
+    if diff_angle < threshold or diff_angle > (180 - threshold):
         return RoadOption.STRAIGHT
     elif diff_angle > 90.0:
         return RoadOption.LEFT

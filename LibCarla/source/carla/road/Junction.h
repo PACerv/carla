@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "carla/geom/BoundingBox.h"
 #include "carla/NonCopyable.h"
 #include "carla/road/RoadTypes.h"
 
@@ -64,6 +65,14 @@ namespace road {
       return _connections;
     }
 
+    std::unordered_map<ConId, Connection> GetConnections() const {
+      return _connections;
+    }
+
+    carla::geom::BoundingBox GetBoundingBox() const{
+      return _bounding_box;
+    }
+
   private:
 
     friend MapBuilder;
@@ -73,6 +82,10 @@ namespace road {
     std::string _name;
 
     std::unordered_map<ConId, Connection> _connections;
+
+    std::set<ContId> _controllers;
+
+    carla::geom::BoundingBox _bounding_box;
   };
 
 } // road

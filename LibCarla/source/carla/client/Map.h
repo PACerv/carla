@@ -21,6 +21,7 @@ namespace geom { class GeoLocation; }
 namespace client {
 
   class Waypoint;
+  class Junction;
 
   class Map
     : public EnableSharedFromThis<Map>,
@@ -72,6 +73,13 @@ namespace client {
     const geom::GeoLocation &GetGeoReference() const;
 
     std::vector<geom::Location> GetAllCrosswalkZones() const;
+
+    SharedPtr<Junction> GetJunction(const Waypoint &waypoint) const;
+
+    /// Returns a pair of waypoints (start and end) for each lane in the
+    /// junction
+    std::vector<std::pair<SharedPtr<Waypoint>, SharedPtr<Waypoint>>> GetJunctionWaypoints(
+        road::JuncId id, road::Lane::LaneType type) const;
 
   private:
 

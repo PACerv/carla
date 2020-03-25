@@ -16,6 +16,9 @@ help:
 import: server
 	@"${CARLA_BUILD_TOOLS_FOLDER}/Import.py"
 
+CarlaUE4Editor: LibCarla
+	@"${CARLA_BUILD_TOOLS_FOLDER}/BuildCarlaUE4.bat" --build
+
 launch: LibCarla
 	@"${CARLA_BUILD_TOOLS_FOLDER}/BuildCarlaUE4.bat" --launch
 
@@ -23,14 +26,14 @@ launch-only:
 	@"${CARLA_BUILD_TOOLS_FOLDER}/BuildCarlaUE4.bat" --launch
 
 package: PythonAPI
-	@"${CARLA_BUILD_TOOLS_FOLDER}/Package.bat" --ue-version 4.22
+	@"${CARLA_BUILD_TOOLS_FOLDER}/Package.bat" --ue-version 4.24 $(ARGS)
 
 docs:
 	@doxygen
 	@echo "Documentation index at ./Doxygen/html/index.html"
 
 clean:
-	@"${CARLA_BUILD_TOOLS_FOLDER}/Package.bat" --clean --ue-version 4.22
+	@"${CARLA_BUILD_TOOLS_FOLDER}/Package.bat" --clean --ue-version 4.24
 	@"${CARLA_BUILD_TOOLS_FOLDER}/BuildCarlaUE4.bat" --clean
 
 	@"${CARLA_BUILD_TOOLS_FOLDER}/BuildPythonAPI.bat" --clean
@@ -63,3 +66,6 @@ LibCarla: setup
 
 setup:
 	@"${CARLA_BUILD_TOOLS_FOLDER}/Setup.bat" --boost-toolset msvc-14.1
+
+deploy:
+	@"${CARLA_BUILD_TOOLS_FOLDER}/Deploy.bat" $(ARGS)
