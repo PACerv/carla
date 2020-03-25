@@ -18,6 +18,7 @@
 #include <carla/sensor/data/LidarMeasurement.h>
 #include <carla/sensor/data/GnssMeasurement.h>
 #include <carla/sensor/data/RadarMeasurement.h>
+#include <carla/sensor/data/VisibleActorEvent.h>
 
 #include <carla/sensor/s11n/RadarData.h>
 
@@ -300,4 +301,12 @@ void export_sensor_data() {
     .def_readwrite("depth", &css::RadarDetection::depth)
     .def(self_ns::str(self_ns::self))
   ;
+
+  class_<csd::VisibleActorEvent, bases<cs::SensorData>, boost::noncopyable, boost::shared_ptr<csd::VisibleActorEvent>>("VisibleActorEvent", no_init)
+  .def("__len__", &csd::VisibleActorEvent::size)
+  .def("__iter__", iterator<csd::VisibleActorEvent>())
+  .def("__getitem__", +[](const csd::VisibleActorEvent &self, size_t pos) -> cr::ActorId {
+    return self.at(pos);
+  })
+;
 }

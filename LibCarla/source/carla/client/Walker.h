@@ -9,6 +9,7 @@
 #include "carla/client/Actor.h"
 #include "carla/rpc/WalkerControl.h"
 #include "carla/rpc/WalkerBoneControl.h"
+#include "carla/rpc/BoneTransformData.h"
 
 namespace carla {
 namespace client {
