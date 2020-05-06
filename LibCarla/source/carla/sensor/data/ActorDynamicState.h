@@ -74,17 +74,17 @@ namespace detail {
     PackedWalkerControl(const rpc::WalkerControl &control)
       : direction{control.direction.x, control.direction.y, control.direction.z},
         speed(control.speed),
-        jump(control.jump) {}
+        animation_id(control.animation_id) {}
 
     operator rpc::WalkerControl() const {
-      return {geom::Vector3D{direction[0u], direction[1u], direction[2u]}, speed, jump};
+      return {geom::Vector3D{direction[0u], direction[1u], direction[2u]}, speed, animation_id};
     }
 
   private:
 
     float direction[3u];
     float speed;
-    bool jump;
+    uint32_t animation_id;
   };
 
 #pragma pack(pop)
@@ -128,12 +128,12 @@ namespace detail {
 
 #pragma pack(pop)
 
-static_assert(
-    sizeof(ActorDynamicState) == 93u,
-    "Invalid ActorDynamicState size! "
-    "If you modified this class please update the size here, else you may "
-    "comment this assert, but your platform may have compatibility issues "
-    "connecting to other platforms.");
+// static_assert(
+//     sizeof(ActorDynamicState) == 93u,
+//     "Invalid ActorDynamicState size! "
+//     "If you modified this class please update the size here, else you may "
+//     "comment this assert, but your platform may have compatibility issues "
+//     "connecting to other platforms.");
 
 #pragma pack(push, 1)
 

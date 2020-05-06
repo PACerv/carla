@@ -492,7 +492,11 @@ void FCarlaServer::FPimpl::BindActions()
     {
       RESPOND_ERROR("unable to set walker state: walker has an incompatible controller");
     }
-    cr::WalkerControl Control(Transform.GetForwardVector(), Speed, false);
+    if (Speed == 0)
+    {
+      RESPOND_ERROR("set_walker_state: CarlaServer.cpp: Speed 0")
+    }
+    cr::WalkerControl Control(Transform.GetForwardVector(), Speed, 0);
     Controller->ApplyWalkerControl(Control);
 
     return R<void>::Success();
@@ -702,6 +706,9 @@ void FCarlaServer::FPimpl::BindActions()
     {
       RESPOND_ERROR("unable to apply control: walker has an incompatible controller");
     }
+
+    UE_LOG(LogCarla, Error, TEXT("CarlaServer.cpp : apply_control_to_walker : Speed %f"), Control.speed);
+    
     Controller->ApplyWalkerControl(Control);
     return R<void>::Success();
   };

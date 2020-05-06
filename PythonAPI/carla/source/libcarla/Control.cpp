@@ -34,7 +34,7 @@ namespace rpc {
   std::ostream &operator<<(std::ostream &out, const WalkerControl &control) {
     out << "WalkerControl(direction=" << control.direction
         << ", speed=" << std::to_string(control.speed)
-        << ", jump=" << boolalpha(control.jump) << ')';
+        << ", animation_id=" << std::to_string(control.animation_id) << ')';
     return out;
   }
 
@@ -288,13 +288,13 @@ void export_control() {
   ;
 
   class_<cr::WalkerControl>("WalkerControl")
-    .def(init<cg::Vector3D, float, bool>(
+    .def(init<cg::Vector3D, float, int>(
        (arg("direction") = cg::Vector3D{1.0f, 0.0f, 0.0f},
        arg("speed") = 0.0f,
-       arg("jump") = false)))
+       arg("animation_id") = 0)))
     .def_readwrite("direction", &cr::WalkerControl::direction)
     .def_readwrite("speed", &cr::WalkerControl::speed)
-    .def_readwrite("jump", &cr::WalkerControl::jump)
+    .def_readwrite("animation_id", &cr::WalkerControl::animation_id)
     .def("__eq__", &cr::WalkerControl::operator==)
     .def("__ne__", &cr::WalkerControl::operator!=)
     .def(self_ns::str(self_ns::self))

@@ -6,12 +6,14 @@
 
 #include "Carla.h"
 #include "Carla/Walker/WalkerController.h"
+#include "Carla/Walker/WalkerAnimated.h"
 
 #include "Components/PoseableMeshComponent.h"
 #include "Components/PrimitiveComponent.h"
 #include "Containers/Map.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Pawn.h"
+
 
 #include <boost/variant/apply_visitor.hpp>
 
@@ -61,6 +63,7 @@ UPoseableMeshComponent *AddNewBoneComponent(AActor *InActor, FVector inLocation,
 void AWalkerController::ApplyWalkerControl(const FWalkerControl &InControl)
 {
   Control = InControl;
+  UE_LOG(LogCarla, Error, TEXT("WalkerController: ApplyWalkerControl: Walker Speed %f"), InControl.Speed);
   if (bManualBones)
   {
     SetManualBones(false);
@@ -112,11 +115,13 @@ void AWalkerController::ControlTickVisitor::operator()(const FWalkerControl &Wal
   auto *Character = Controller->GetCharacter();
   if (Character != nullptr)
   {
+    // UE_LOG(LogCarla, Error, TEXT("WalkerController: Serverside: Walker Speed %f"), WalkerControl.Speed);
     Character->AddMovementInput(WalkerControl.Direction,
         WalkerControl.Speed / Controller->GetMaximumWalkSpeed());
-    if (WalkerControl.Jump)
+
+    if (Cast<AWalkerAnimator>(Character)!=nullptr)
     {
-      Character->Jump();
+      Cast<AWalkerAnimator>(Character)->OnTriggerAnimation(WalkerControl.Animation_ID);
     }
   }
 }
